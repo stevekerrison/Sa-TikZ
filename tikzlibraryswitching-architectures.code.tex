@@ -127,6 +127,28 @@
 }%
 
 % * * * * * * * * * * * * * * * * * *
+% BUTTERFLY
+% * * * * * * * * * * * * * * * * * *
+
+% BP is the number of input/output ports
+\pgfkeys{/tikz/.cd,%
+      BP/.store in=\BP,%
+      BP=8,%
+}%
+
+% BM is the number of ports per middle layer switch
+\pgfkeys{/tikz/.cd,%
+      BM/.store in=\BM,%
+      BM=2,%
+}%
+
+% BN is the number of ports per all other switchers
+\pgfkeys{/tikz/.cd,%
+      BN/.store in=\BN,%
+      BN=2,%
+}%
+
+% * * * * * * * * * * * * * * * * * *
 % BENES
 % * * * * * * * * * * * * * * * * * *
 
