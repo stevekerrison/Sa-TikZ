@@ -145,7 +145,13 @@
 % BN is the number of ports per all other switchers
 \pgfkeys{/tikz/.cd,%
       BN/.store in=\BN,%
-      BN=2,%
+      BN=4,%
+}%
+
+% BL is the number of layers per wing ((total-1)/2)
+\pgfkeys{/tikz/.cd,%
+      BL/.store in=\BL,%
+      BL=1,%
 }%
 
 % * * * * * * * * * * * * * * * * * *
@@ -609,100 +615,6 @@
         \node[below of=r3-2, set math mode labels] {\rtwo~\ensuremath{\times}~\mthree};
         \draw[decorate,decoration={brace}]($(r1-2-front input-2)-(0.1,0)$)--($(r1-1-front input-1)-(0.1,0)$) node[midway,left=0.1cm, set math mode labels]{\N};
         \draw[decorate,decoration={brace}]($(r3-1-front output-1)+(0.1,0)$)--($(r3-2-front output-2)+(0.1,0)$) node[midway,right=0.1cm, set math mode labels]{\M};
-    },
-}
-
-% BUTTERFLY
-\tikzset{butterfly/.code={
-
-      % Number of ports per module
-      \pgfmathtruncatemacro{\mone}{\N/\rone}
-      \pgfmathtruncatemacro{\mthree}{\M/\rthree}
-
-        % COMPUTATION SNB CONDITION
-        \pgfmathtruncatemacro\rtwo{\mone+\mthree-1}
-
-        % MODULE 1
-        \foreach \i in {1,...,\rone}{
-              \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep}
-              in
-              node[module,#1,module opacity,yshift=1cm]  (r1-\i) at +(0,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
-              
-              % INPUTS MODULE 1    
-            % the number of inputs module one is exactly \mone
-            \pgfmathsetmacro\roneintervalspace{1/(\mone+1)}        
-            \foreach \roneinput[evaluate=\roneinput as \roneinterval using \roneintervalspace*\roneinput] 
-            in {1,...,\mone}
-            \draw ($(r1-\i.north west)!\roneinterval!(r1-\i.south west)-(0.5*\pinlength,0)$)node[scale=0.1](r1-\i-front input-\roneinput){}--($(r1-\i.north west)!\roneinterval!(r1-\i.south west)$) node[circle,draw,scale=0.1] (r1-\i-input-\roneinput) {};
-            
-            % OUTPUTS MODULE 1
-            % the number of outputs of module one is the number of modules stage 2 \rtwo
-            \pgfmathsetmacro\roneintervalspace{1/(\rtwo+1)}
-            \foreach \roneoutput[evaluate=\roneoutput as \roneinterval using \roneintervalspace*\roneoutput] 
-            in {1,...,\rtwo}
-            \node[circle,draw,scale=0.1] (r1-\i-output-\roneoutput)at($(r1-\i.north east)!\roneinterval!(r1-\i.south east)$)  {};
-        }
-        
-        % MODULE 2
-        \foreach \i in {1,...,\rtwo}{
-              \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep}
-              in
-              node[module,#1,module opacity,yshift=1cm]  (r2-\i) at +(\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
-
-          % INPUTS MODULE 2
-            % the number of inputs of module two is the number of modules stage 1 \rone
-            \pgfmathsetmacro\rtwointervalspace{1/(\rone+1)}
-            \foreach \rtwoinput[evaluate=\rtwoinput as \rtwointerval using \rtwointervalspace*\rtwoinput] 
-            in {1,...,\rone}
-            \node[circle,draw,scale=0.1] (r2-\i-input-\rtwoinput)at($(r2-\i.north west)!\rtwointerval!(r2-\i.south west)$)  {};    
-            
-            % OUTPUTS MODULE 2
-            % the number of outputs module two is exactly \rthree
-            \pgfmathsetmacro\rtwointervalspace{1/(\rthree+1)}        
-            \foreach \rtwooutput[evaluate=\rtwooutput as \rtwointerval using \rtwointervalspace*\rtwooutput] 
-            in {1,...,\rthree}
-            \node[circle,draw,scale=0.1] (r2-\i-output-\rtwooutput)at ($(r2-\i.north east)!\rtwointerval!(r2-\i.south east)$) {};
-              
-        }
-        
-        % MODULE 3
-        \foreach \i in {1,...,\rthree}{
-              \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep}
-              in
-              node[module,#1,module opacity,yshift=1cm]  (r3-\i) at +(2*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
-              
-              % INPUTS MODULE 3
-            % the number of inputs of module three is the number of modules stage 2 \rtwo
-            \pgfmathsetmacro\rthreeintervalspace{1/(\rtwo+1)}
-            \foreach \rthreeinput[evaluate=\rthreeinput as \rthreeinterval using \rthreeintervalspace*\rthreeinput] 
-            in {1,...,\rtwo}
-            \node[circle,draw,scale=0.1] (r3-\i-input-\rthreeinput)at($(r3-\i.north west)!\rthreeinterval!(r3-\i.south west)$)  {};
-              
-              % OUTPUTS MODULE 3    
-            % the number of outputs module three is exactly \mthree
-            \pgfmathsetmacro\rthreeintervalspace{1/(\mthree+1)}        
-            \foreach \rthreeoutput[evaluate=\rthreeoutput as \rthreeinterval using \rthreeintervalspace*\rthreeoutput] 
-            in {1,...,\mthree}
-            \draw ($(r3-\i.north east)!\rthreeinterval!(r3-\i.south east)+(0.5*\pinlength,0)$)node[scale=0.1](r3-\i-front output-\rthreeoutput){}--($(r3-\i.north east)!\rthreeinterval!(r3-\i.south east)$) node[circle,draw,scale=0.1] (r3-\i-output-\rthreeoutput) {};
-              
-        }
-        
-        % Test if connections should be removed
-        \ifconnectiondisabled
-            \relax
-        \else
-            % DRAWING CONNECTIONS
-            %% from r1 to r2
-            \foreach \startmodule in {1,...,\rone}{
-            \foreach \conn in {1,...,\rtwo}
-                    \draw(r1-\startmodule-output-\conn)--(r2-\conn-input-\startmodule);
-            }
-            %% from r2 to r3
-            \foreach \startmodule in {1,...,\rthree}{
-            \foreach \conn in {1,...,\rtwo}
-                    \draw(r3-\startmodule-input-\conn)--(r2-\conn-output-\startmodule);
-            }
-        \fi    
     },
 }
 
@@ -1252,6 +1164,127 @@
         \fi % disable connections
     }
 }
+
+% BUTTERFLY
+
+\tikzset{butterfly/.code={        
+
+      % Number of ports per module
+      \pgfmathtruncatemacro{\mswitches}{\BP/\BM}
+      \pgfmathtruncatemacro{\aswitches}{\BP/\BN}
+
+      % Number of ports per module
+      \pgfmathtruncatemacro{\m}{2}
+        
+      % Number of modules in the first/third stage
+      \pgfmathtruncatemacro{\r}{\P/\m}
+      
+      % Shrinkage of middle stage nodes
+      \pgfmathtruncatemacro{\ns}{\BN/\BM}
+      
+      % Number of stages
+      \pgfmathtruncatemacro{\stages}{2*\BL+1}
+      
+      \pgfmathtruncatemacro{\midstage}{\BL+1}
+      
+      % MODULES for all stages
+      \foreach \s [evaluate=\s as \numstage using int(\s-1)] in {1,...,\stages}{
+          \ifnum\s=1
+          % FIRST MODULE 
+           \foreach \i in {1,...,\aswitches}{
+                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep}
+                 in
+                 node[module,#1,module opacity,yshift=1cm]  (r\s-\i) at +(0,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
+                 
+                 % INPUTS MODULE 1    
+               % the number of inputs module one is exactly \mone
+               \pgfmathsetmacro\roneintervalspace{1/(\BN+1)}
+               \foreach \roneinput[evaluate=\roneinput as \roneinterval using \roneintervalspace*\roneinput] 
+               in {1,...,\BN}
+               \draw ($(r1-\i.north west)!\roneinterval!(r1-\i.south west)-(0.5*\pinlength,0)$)node[scale=0.1](r1-\i-front input-\roneinput){}--($(r1-\i.north west)!\roneinterval!(r1-\i.south west)$) node[circle,draw,scale=0.1] (r1-\i-input-\roneinput) {};
+            
+               % OUTPUTS MODULE 1
+               % the number of outputs of module one is the number of modules stage 2
+               \pgfmathsetmacro\roneintervalspace{1/(\BN+1)}
+               \foreach \roneoutput[evaluate=\roneoutput as \roneinterval using \roneintervalspace*\roneoutput] 
+               in {1,...,\BN}
+               \node[circle,draw,scale=0.1] (r1-\i-output-\roneoutput)at($(r1-\i.north east)!\roneinterval!(r1-\i.south east)$)  {};
+           }
+          \fi
+          \ifnum\s=\stages
+           % FINAL MODULE 
+           \foreach \i in {1,...,\aswitches}{
+                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep}
+                 in
+                 node[module,#1,module opacity,yshift=1cm]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
+                 
+                 % INPUTS MODULE \s
+               % the number of inputs of module three is the number of modules stage 2 \rtwo
+               \pgfmathsetmacro\rintervalspace{1/(\BN+1)}
+               \foreach \rinput[evaluate=\rinput as \rinterval using \rintervalspace*\rinput] 
+               in {1,...,\BN}
+               \node[circle,draw,scale=0.1] (r\s-\i-input-\rinput)at($(r\s-\i.north west)!\rinterval!(r\s-\i.south west)$)  {};
+                 
+                 % OUTPUTS MODULE \s
+               % the number of outputs module three is exactly \mthree
+               \pgfmathsetmacro\rintervalspace{1/(\BN+1)}        
+               \foreach \routput[evaluate=\routput as \rinterval using \rintervalspace*\routput] 
+               in {1,...,\BN}
+               \draw ($(r\s-\i.north east)!\rinterval!(r\s-\i.south east)+(0.5*\pinlength,0)$)node[scale=0.1](r\s-\i-front output-\routput){}--($(r\s-\i.north east)!\rinterval!(r\s-\i.south east)$) node[circle,draw,scale=0.1] (r\s-\i-output-\routput) {};            
+           }
+        \fi
+        \ifnum\s=\midstage
+           % MIDDLE MODULEs 
+           \foreach \i in {1,...,\mswitches}{
+                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep/\ns}
+                 in
+                 node[module,module size=1cm/\ns,module opacity,yshift=1cm]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
+                 
+                 % INPUTS MODULE \s
+               % the number of inputs of module three is the number of modules stage 2 \rtwo
+               \pgfmathsetmacro\rintervalspace{1/(\BM+1)}
+               \foreach \rinput[evaluate=\rinput as \rinterval using \rintervalspace*\rinput] 
+               in {1,...,\BM}
+               \node[circle,draw,scale=0.1] (r\s-\i-input-\rinput)at($(r\s-\i.north west)!\rinterval!(r\s-\i.south west)$)  {};
+                 
+                 % OUTPUTS MODULE \s
+               % the number of outputs module three is exactly \mthree
+               \pgfmathsetmacro\rintervalspace{1/(\BM+1)}        
+               \foreach \routput[evaluate=\routput as \rinterval using \rintervalspace*\routput] 
+               in {1,...,\BM}
+               \node[circle,draw,scale=0.1] (r\s-\i-output-\routput) at($(r\s-\i.north east)!\rinterval!(r\s-\i.south east)$)  {};            
+           }
+        \fi
+        %\pgfmathparse{and(and(\s>1,\s<\stages),\s!=\BL+1)}
+        \pgfmathparse{and(and(\s>1,\s<\stages),\s!=\BL+1)}
+        \let\cond\pgfmathresult
+        \ifnum\cond=1
+           % INTERMEDIATE MODULEs 
+           \foreach \i in {1,...,\aswitches}{
+                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep}
+                 in
+                 node[module,#1,module opacity,yshift=1cm]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
+                 
+                 % INPUTS MODULE \s
+               % the number of inputs of module three is the number of modules stage 2 \rtwo
+               \pgfmathsetmacro\rintervalspace{1/(\BN+1)}
+               \foreach \rinput[evaluate=\rinput as \rinterval using \rintervalspace*\rinput] 
+               in {1,...,\BN}
+               \node[circle,draw,scale=0.1] (r\s-\i-input-\rinput)at($(r\s-\i.north west)!\rinterval!(r\s-\i.south west)$)  {};
+                 
+                 % OUTPUTS MODULE \s
+               % the number of outputs module three is exactly \mthree
+               \pgfmathsetmacro\rintervalspace{1/(\BN+1)}        
+               \foreach \routput[evaluate=\routput as \rinterval using \rintervalspace*\routput] 
+               in {1,...,\BN}
+               \node[circle,draw,scale=0.1] (r\s-\i-output-\routput) at($(r\s-\i.north east)!\rinterval!(r\s-\i.south east)$)  {};            
+           }
+        \fi
+      }
+      % end modules
+    }
+}
+
 
 % BANYAN NETWORKS
 
