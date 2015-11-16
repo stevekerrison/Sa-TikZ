@@ -1169,15 +1169,9 @@
 
 \tikzset{butterfly/.code={        
 
-      % Number of ports per module
+      % Number of modules per stage
       \pgfmathtruncatemacro{\mswitches}{\BP/\BM}
       \pgfmathtruncatemacro{\aswitches}{\BP/\BN}
-
-      % Number of ports per module
-      \pgfmathtruncatemacro{\m}{2}
-        
-      % Number of modules in the first/third stage
-      \pgfmathtruncatemacro{\r}{\P/\m}
       
       % Shrinkage of middle stage nodes
       \pgfmathtruncatemacro{\ns}{\BN/\BM}
@@ -1192,9 +1186,9 @@
           \ifnum\s=1
           % FIRST MODULE 
            \foreach \i in {1,...,\aswitches}{
-                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep}
+                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep*\BN/4}
                  in
-                 node[module,#1,module opacity,yshift=1cm]  (r\s-\i) at +(0,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
+                 node[module,#1,module opacity,yshift=1cm,minimum height=0.25cm*\BN]  (r\s-\i) at +(0,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
                  
                  % INPUTS MODULE 1    
                % the number of inputs module one is exactly \mone
@@ -1214,9 +1208,9 @@
           \ifnum\s=\stages
            % FINAL MODULE 
            \foreach \i in {1,...,\aswitches}{
-                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep}
+                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep*\BN/4}
                  in
-                 node[module,#1,module opacity,yshift=1cm]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
+                 node[module,#1,module opacity,yshift=1cm,minimum height=0.25cm*\BN]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
                  
                  % INPUTS MODULE \s
                % the number of inputs of module three is the number of modules stage 2 \rtwo
@@ -1235,10 +1229,11 @@
         \fi
         \ifnum\s=\midstage
            % MIDDLE MODULEs 
+           \pgfmathsetmacro\midysep{(\moduleysep*\BM/4))}
            \foreach \i in {1,...,\mswitches}{
-                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep/\ns}
+                 \path let \n1 = {int(0-\i)}, \n2={-\moduleysep/\ns-\i*\midysep}
                  in
-                 node[module,module size=1cm/\ns,module opacity,yshift=1cm]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
+                 node[module,module size=1cm/\ns,module opacity,yshift=1cm,minimum height=0.25cm*\BM]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
                  
                  % INPUTS MODULE \s
                % the number of inputs of module three is the number of modules stage 2 \rtwo
@@ -1261,9 +1256,9 @@
         \ifnum\cond=1
            % INTERMEDIATE MODULEs 
            \foreach \i in {1,...,\aswitches}{
-                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep}
+                 \path let \n1 = {int(0-\i)}, \n2={0-\i*\moduleysep*\BN/4}
                  in
-                 node[module,#1,module opacity,yshift=1cm]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
+                 node[module,#1,module opacity,yshift=1cm,minimum height=0.25cm*\BN]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
                  
                  % INPUTS MODULE \s
                % the number of inputs of module three is the number of modules stage 2 \rtwo
