@@ -1231,7 +1231,11 @@
            % MIDDLE MODULEs 
            \pgfmathsetmacro\midysep{(\moduleysep*\BM/4))}
            \foreach \i in {1,...,\mswitches}{
-                 \path let \n1 = {int(0-\i)}, \n2={-\moduleysep/\ns-\i*\midysep}
+                \pgfmathparse{mod(\i,\ns)!=0}
+                \let\cond\pgfmathresult
+                \pgfmathparse{\BM==\BN}
+                \let\condB\pgfmathresult
+                 \path let \n1 = {int(0-\i)}, \n2={0-(\i*\moduleysep*\BM/4)-((\moduleysep*(\BN/12))*\cond)-(((\moduleysep*(\BN/12))/2)*(1-\cond))+((\moduleysep*(\BN/24))*\condB)}%-\cond*(\i/\ns)*\moduleysep*\BN/4+\cond*\moduleysep*\BN/4}
                  in
                  node[module,module size=1cm/\ns,module opacity,yshift=1cm,minimum height=0.25cm*\BM]  (r\s-\i) at +(\numstage*0.6*\modulexsep,\n2) {\pgfmathparse{int(multiply(\n1,-1))}\pgfmathresult};
                  
